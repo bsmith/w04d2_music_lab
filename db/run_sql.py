@@ -1,13 +1,7 @@
-# import logging
-
 import psycopg2
 import psycopg2.extras as ext
 
 DBNAME = 'music'
-
-# logging.basicConfig(level=5)
-# logger = logging.getLogger(__name__)
-# logger.debug("Hello World")
 
 def run_sql(sql: str, values: list = None, do_fetchall : bool = True) -> list[dict]:
     conn = None
@@ -16,17 +10,14 @@ def run_sql(sql: str, values: list = None, do_fetchall : bool = True) -> list[di
 
     try:
         # Connect to the DB
-        # conn = psycopg2.connect(dsn=f"dbname='{DBNAME}'", connection_factory=ext.LoggingConnection)
-        # conn.initialize(logger)
         conn = psycopg2.connect(f"dbname='{DBNAME}'")
         # Define a cursor
-        cur = conn.cursor(cursor_factory = ext.DictCursor) # XXX THIS STOPS DEBUGGING WORKING
+        cur = conn.cursor(cursor_factory = ext.DictCursor)
         # Execute the SQL
         cur.execute(sql, values)
         # Commit
         conn.commit()
         # Fetch the results
-        # print(cur.rowcount)
         if do_fetchall:
             results = cur.fetchall()
     except (Exception, psycopg2.DatabaseError) as error:
