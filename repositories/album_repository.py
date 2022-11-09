@@ -4,18 +4,20 @@ from models.album import Album
 import repositories.artist_repository as artist_repository
 
 SQL_SELECT_ALL = """SELECT title, genre, artist_id, id FROM albums"""
-SQL_INSERT = """INSERT INTO albums (title, genre, artist_id)
-    VALUES (%s, %s, %s) RETURNING *"""
 SQL_SELECT = """SELECT title, genre, artist_id, id FROM albums WHERE id = %s"""
-SQL_DELETE = """DELETE FROM albums WHERE id = %s"""
-SQL_DELETE_ALL = """DELETE FROM albums"""
-SQL_UPDATE = """UPDATE albums SET (title, genre, artist_id) =
-    (%s, %s, %s) WHERE id = %s"""
+SQL_SELECT_BY_ARTIST = """SELECT title, genre, artist_id, id FROM albums WHERE artist_id = %s"""
 
 def make_album_from_row(row):
     # print('row:', row)
     artist = artist_repository.select(row['artist_id'])
     return Album(row['title'], row['genre'], artist, row['id'])
+
+SQL_INSERT = """INSERT INTO albums (title, genre, artist_id)
+    VALUES (%s, %s, %s) RETURNING *"""
+SQL_DELETE = """DELETE FROM albums WHERE id = %s"""
+SQL_DELETE_ALL = """DELETE FROM albums"""
+SQL_UPDATE = """UPDATE albums SET (title, genre, artist_id) =
+    (%s, %s, %s) WHERE id = %s"""
 
 # NB omits id!
 def make_row_from_album(album):
@@ -59,3 +61,10 @@ def update(album):
     values = make_row_from_album(album) + [album.id]
     run_sql(sql, values, do_fetchall=False)
     return True
+
+def select_by_artist(artist):
+    sql = SQL_SELECT_BY_ARTIST
+    values = [artist.id]
+    results = run_sql(sql, values)
+    albums = [make_album_from_row(row) for row in results]
+    return albums

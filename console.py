@@ -12,6 +12,11 @@ print(artist)
 print(artist_repository.select(artist.id))
 artist_repository.delete(artist.id)
 
+for artist in artist_repository.select_all():
+    print(f"Artist: {artist.name}")
+    albums = album_repository.select_by_artist(artist)
+    print(f"    Albums: {albums}")
+
 # `python3 -i console.py` has better tab completion!
 #import pdb
 #pdb.set_trace()
